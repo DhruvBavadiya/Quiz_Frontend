@@ -9,10 +9,14 @@ import Signup from "./Pages/Signup";
 import Login from "./Pages/Login";
 import { ToastContainer } from 'react-toastify';
 import About from "./Pages/About";
-
+import Quizinstruction from "./Pages/QuizInstruction";
+import ExamPage from "./Pages/Exampage";
+import Result from "./Pages/Result";
+import {DataProvider} from './Context/DataContext'
 function App() {
   return (
-    <div className="App">
+    <DataProvider>
+    <div className="App overflow-y-auto scroll-m-0">
     <Sidebar/>
     <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
       <Routes>
@@ -20,11 +24,15 @@ function App() {
         <Route path="/leaderboard" element={<Leader />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/quiz" element={<Quiz/>} />
+        <Route path="/exam/:subject/:difficulty" element={<ExamPage/>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/signup" element={<Signup/>} />
+        <Route path="/result" element={<Result/>} />
         <Route path="/about" element={<About/>} />
+        <Route path="/exam/instruction" element={<Quizinstruction/>} />
       </Routes>
     </div>
+    </DataProvider>
   );
 }
 

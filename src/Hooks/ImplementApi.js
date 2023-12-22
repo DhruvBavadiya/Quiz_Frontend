@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 // useTrendingSection.js
 
 import useApi from './useApi';
@@ -8,4 +9,8 @@ const ImplementApi = () => {
   return { trendingSections: response?.section, loading, error };
 };
 
-export default ImplementApi;
+const SignUser = ()=>{
+  const {response,loading,error} = useApi('signup');
+  return {user:response,loading,error}
+}
+export default {SignUser,ImplementApi}

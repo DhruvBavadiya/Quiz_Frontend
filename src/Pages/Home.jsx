@@ -1,62 +1,57 @@
-import React from "react";
+// Home.js
+import React, { useEffect, useState } from "react";
 import Sidebar from "../Components/Sidebar";
 import Quizblock from "../Components/Quizblock";
 import Categories from "../Components/Categories";
 import Leaderboard from "../Components/LeaderBoard";
-import ImplementApi from "../Hooks/ImplementApi";
-
-const trending = [
-  { name: "Physics", description: "Dive into Knowledge of physics." },
-  { name: "Gk", description: "Get test yourself with general Knowledge." },
-  { name: "Maths", description: "Let's test maths with your logic." },
-  { name: "Maths", description: "Let's test maths with your logic." },
-];
-
-const Category = [
-  { name: "Physics", description: "Dive into Knowledge of physics." },
-  { name: "Gk", description: "Get test yourself with general Knowledge." },
-  { name: "Maths", description: "Let's test maths with your logic." },
-  { name: "Biology", description: "Explore the world of living organisms." },
-  { name: "History", description: "Travel through the pages of history." },
-  {
-    name: "Technology",
-    description: "Stay updated with the latest tech trends.",
-  },
-  {
-    name: "Literature",
-    description: "Immerse yourself in the world of literature.",
-  },
-  { name: "Coding", description: "Sharpen your coding skills and knowledge." },
-  { name: "Biology", description: "Explore the world of living organisms." },
-  { name: "History", description: "Travel through the pages of history." },
-  {
-    name: "Technology",
-    description: "Stay updated with the latest tech trends.",
-  },
-  {
-    name: "Literature",
-    description: "Immerse yourself in the world of literature.",
-  },
-  { name: "Coding", description: "Sharpen your coding skills and knowledge." },
-];
-
-
-const data = [
-  { name: 'John Doe', score: 120 },
-  { name: 'Alice Smith', score: 95 },
-  { name: 'Bob Johnson', score: 80 },
-  { name: 'Eva Williams', score: 110 },
-  { name: 'Charlie Brown', score: 65 },
-];
-
-
+import { Link, useNavigate } from "react-router-dom";
+import HomeLeaderBoard from "../Components/HomeLeaderBoard";
+import useGenericApi from "../Hooks/useGenericApi";
+import { useData } from '../Context/DataContext';
 
 const Home = () => {
-  const { trendingSections, loading, error } = ImplementApi();
+  const { trending, fetchTrending, category, fetchCategory } = useData();
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [selectedDifficulty, setSelectedDifficulty] = useState("");
+  const [showDifficultySelection, setShowDifficultySelection] = useState(false);
+  const navigate = useNavigate()
+  const handleClickCategory = (data) => {
+    setSelectedSubject((prevSelected) =>
+      prevSelected === data?.category ? "" : data?.category
+    );
+    setShowDifficultySelection(prev => !prev); // Toggle the difficulty selection
+  };
+  
 
-  console.log(trendingSections)
+  const handleDifficultyChange = (difficulty) => {
+    setSelectedDifficulty(difficulty);
+    if(selectedDifficulty){
+      navigate('exam/instruction',{
+        state:{
+          selectedDifficulty,
+          selectedSubject
+        }
+      })
+    }
+    
+  };
+
+  useEffect(() => {
+    // Fetch trending data only if it hasn't been fetched before
+    if (!trending.length) {
+      fetchTrending();
+    }
+  }, [trending, fetchTrending]);
+
+  useEffect(() => {
+    // Fetch category data only if it hasn't been fetched before
+    if (!category.length) {
+      fetchCategory();
+    }
+  }, [category, fetchCategory]);
+
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row scrollbar-none">
       <div className="flex-col flex-1 ml-[16.666666%] bg-[#282828] text-white overflow-y-auto">
         <div className="text-left ">
           <h2 className="text-4xl text-white mt-8 mb-1.5 ml-8 font-bold">
@@ -64,13 +59,11 @@ const Home = () => {
           </h2>
         </div>
         <div className="flex flex-wrap justify-evenly ml-4 mr-4 ">
-          {trending.map((data) => {
-            return (
-              <div className="">
-                <Quizblock Title={data.name} Description={data.description} />
-              </div>
-            );
-          })}
+          {trending?.slice(0, 4).map((data) => (
+            <div key={data.category} className="hover:scale-105 transition duration-200">
+              <Quizblock Title={data.category} />
+            </div>
+          ))}
         </div>
         <div className="text-left ">
           <h2 className="text-4xl text-white mt-8 mb-1.5 ml-8 font-bold">
@@ -78,19 +71,50 @@ const Home = () => {
           </h2>
         </div>
         <div className="flex flex-wrap justify-evenly ml-4 mr-4 ">
-        {Category.slice(0,8).map((data, index) => (
-          <div key={index} className="w-1/8 p-4">
-            {/* Render your category block here */}
-            <Categories Title = {data.name}/>
+          {category?.slice(0, 8).map((data, index) => (
+            <div key={data.category} className="w-1/8 p-4" onClick={() => handleClickCategory(data)}>
+              <Categories category={data.category} selectedSubject={selectedSubject} />
+            </div>
+          ))}
+        </div>
+        {showDifficultySelection && (
+          <div className="text-left mt-4 ml-8 flex items-center">
+            <h2 className="text-4xl text-white mb-1.5 font-bold">Choose Difficulty:</h2>
+            <div className="flex space-x-4 ml-4 ">
+              <button onClick={() => handleDifficultyChange("Easy")} className="text-white bg-black hover:scale-105 transition duration-100 px-4 py-2 rounded-xl">Easy</button>
+              <button onClick={() => handleDifficultyChange("Medium")} className="text-white bg-black hover:scale-105 transition duration-100 px-4 py-2 rounded-xl">Medium</button>
+              <button onClick={() => handleDifficultyChange("Hard")} className="text-white bg-black hover:scale-105 transition duration-100 px-4 py-2 rounded-xl">Hard</button>
+              <button onClick={() => handleDifficultyChange("Random")} className="text-white bg-black hover:scale-105 transition duration-100 px-4 py-2 rounded-xl">Random</button>
+            </div>
           </div>
-        ))}
-      </div>
-          <div className="mt-8">
-          <Leaderboard data = {data}/>
-          </div>
+        )}
+        
+        <div className="mt-8">
+          <HomeLeaderBoard className="h-5" />
+        </div>
+        <div className="flex pl-4 mt-4 mb-2 lg:w-fit w-auto mx-auto hover:scale-105">
+          <Link
+            to="/leaderboard"
+            className="text-white hover:text-[#040D12]  inline-flex items-center md:mb-2 lg:mb-0"
+          >
+            Go to Leader board page
+            <svg
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="w-4 h-4 ml-2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7"></path>
+            </svg>
+          </Link>
+        </div>
       </div>
     </div>
   );
 };
 
 export default Home;
+
