@@ -14,14 +14,16 @@ const Result = () => {
     },
   } = location;
 
+  console.log(correctAnswers)
+
   const calculateScore = () => {
     let selectedCount = 0;
     let correctCount = 0;
     let wrongCount = 0;
 
     questions.forEach((question) => {
-      const selected = selectedAnswers[question.id];
-      const correct = correctAnswers[question.id];
+      const selected = selectedAnswers[question.questionId];
+      const correct = correctAnswers[question.questionId];
 
       if (selected) {
         selectedCount++;
@@ -38,25 +40,25 @@ const Result = () => {
   };
 
   const renderQuestionStatus = (question, index) => {
-    const selected = selectedAnswers[question.id];
-    const correct = correctAnswers[question.id];
+    const selected = selectedAnswers[question.questionId]; // Use _id instead of id
+    const correct = question.correctOption; // Use correctOption instead of id
     const isCorrect = selected === correct;
     const isWrong = selected && !isCorrect;
     const isSelected = selected;
   
     return (
-      <div key={question.id} className={`flex flex-col ml-6 items-start mb-4 mt-8 ${isSelected ? (isCorrect ? "text-green-500" : isWrong ? "text-red-500" : "") : "text-gray-500"}`}>
+      <div key={question._id} className={`flex flex-col ml-6 items-start mb-4 mt-8 ${isSelected ? (isCorrect ? "text-green-500" : isWrong ? "text-red-500" : "") : "text-gray-500"}`}>
         <div className="text-lg font-bold mb-2">
-          {`${question.id}. ${question.question}`}
+          {`${question.questionId}. ${question.questionText}`}
         </div>
         <div className="ml-2 flex flex-col items-start">
-          {question.options.map((option, i) => (
+          {Object.entries(question.options).map(([optionKey, optionValue], i) => (
             <div key={i} className="flex items-center  space-x-2 text-base">
-              <span>{option}</span>
-              {!isSelected && correct === option && <span className="ml-2 text-green-500">(Correct Answer)</span>}
-              {isCorrect && option === correct && <span className="ml-2 text-green-500">(Correct)</span>}
-              {isWrong && selected === option && <span className="ml-2 text-red-500">(Your Answer)</span>}
-              {isWrong && correct === option && <span className="ml-2 text-green-500">(Correct Answer)</span>}
+              <span>{`${optionKey}: ${optionValue}`}</span>
+              {!isSelected && correct === optionKey && <span className="ml-2 text-green-500">(Correct Answer)</span>}
+              {isCorrect && optionKey === correct && <span className="ml-2 text-green-500">(Correct)</span>}
+              {isWrong && selected === optionKey && <span className="ml-2 text-red-500">(Your Answer)</span>}
+              {isWrong && correct === optionKey && <span className="ml-2 text-green-500">(Correct Answer)</span>}
             </div>
           ))}
         </div>
@@ -64,6 +66,7 @@ const Result = () => {
       </div>
     );
   };
+  
   
   
 
@@ -74,15 +77,18 @@ const Result = () => {
       <div className="container my-8 p-8 bg-[#282828] w-[80%] rounded-md">
         <h1 className="text-5xl font-bold text-white mb-8">Result Page</h1>
         <hr className="w-[100%] bg-white mb-2"></hr>
-        <h1 className="text-white text-3xl font-bold ">Total Score : {correctCount} / {totalQuestions}</h1>
+        <h1 className="text-white text-3xl font-bold ">Total Score : {correctAnswers} / {totalQuestions}</h1>
         <div className=" flex text-white justify-evenly mt-4 mb-4">
             <div className="bg-black p-6 flex rounded-xl flex-col">
                 <h1 className="text-sm text-green-400">Correct Answer</h1>
-                <h1 className="text-2xl font-bold text-green-400">{correctCount}</h1>
+                <h1 className="text-2xl font-bold text-green-400">{correctAnswers}</h1>
             </div>
             <div className="bg-black p-6 flex rounded-xl flex-col">
                 <h1 className="text-sm text-red-400">Wrong Answer</h1>
-                <h1 className="text-2xl font-bold text-red-400">{wrongCount}</h1>
+                <h1 className="text-2xl font-bold text-red-400">
+  {totalQuestions - correctAnswers - (totalQuestions- Object.keys(selectedAnswers).length)}
+</h1>
+
             </div>
             <div className="bg-black p-6 flex rounded-xl flex-col">
                 <h1 className="text-sm text-white">Total Answered</h1>

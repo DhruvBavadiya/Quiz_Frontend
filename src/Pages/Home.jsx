@@ -33,7 +33,6 @@ const Home = () => {
         }
       })
     }
-    
   };
 
   useEffect(() => {
@@ -41,14 +40,14 @@ const Home = () => {
     if (!trending.length) {
       fetchTrending();
     }
-  }, [trending, fetchTrending]);
+  }, [trending]);
 
   useEffect(() => {
     // Fetch category data only if it hasn't been fetched before
     if (!category.length) {
       fetchCategory();
     }
-  }, [category, fetchCategory]);
+  }, [category]);
 
   return (
     <div className="flex flex-row scrollbar-none">
