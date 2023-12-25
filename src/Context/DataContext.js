@@ -25,13 +25,11 @@ export const DataProvider = ({ children }) => {
   } = useGenericApi();
 
   const fetchTrending = async (data) => {
-    console.log('Fetching trending data...');
     await fetchTrendingData('gettrending', 'GET');
     setTrending(trendingResponse?.section || []);
   };
   
   const fetchCategory = async () => {
-    console.log('Fetching category data...');
     await fetchCategoryData('getsection', 'GET');
     setCategory(categoryResponse?.section || []);
   };  
@@ -44,7 +42,6 @@ export const DataProvider = ({ children }) => {
   } = useGenericApi();
 
   const fetchQuestions = async (data) => {
-    console.log('Fetching questions data...');
     await fetchQuestionsData(`getbycategory?category=${data.selectedSubject}&difficulty=${data.selectedDifficulty}`, 'GET');
     setQuestions(questionResponse.questions || []);
     setLoading(false)

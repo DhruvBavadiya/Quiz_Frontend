@@ -4,18 +4,32 @@ import Categories from "../Components/Categories";
 import Quizblock from "../Components/Quizblock";
 import { useData } from "../Context/DataContext";
 import { useNavigate } from "react-router-dom";
+import { InfinitySpin } from "react-loader-spinner";
+import { css } from "@emotion/react";
+import withAuth from "../Components/withAuth";
 
 const Quiz = () => {
   const navigate = useNavigate();
   const { trending, fetchTrending, category, fetchCategory } = useData();
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("");
+  const [sectionId, setSectionId] = useState("");
   const [isOverflow, setIsOverflow] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
+  const override = css`
+  display: block;
+  margin: 0 auto;
+  border-color: red;
+`;
   const difficulties = ["Random", "Easy", "Medium", "Hard"];
 
   const handleClick = (data) => {
+    setSectionId((prevSelected) =>
+      prevSelected === data?.sectionId ? "" : data?.sectionId
+    );
+
     setSelectedSubject((prevSelected) =>
       prevSelected === data?.category ? "" : data?.category
     );
@@ -30,18 +44,19 @@ const Quiz = () => {
   };
 
   const handleStartExam = () => {
-    // Check if both category and difficulty are selected
-    if (selectedSubject && selectedDifficulty) {
-      // Navigate to the exam page with selectedSubject and selectedDifficulty
-      navigate(`/exam/instruction`,{
-        state:{
+    // Check if both category, difficulty, and sectionId are selected
+    if (selectedSubject && selectedDifficulty && sectionId) {
+      // Navigate to the exam page with selectedSubject, selectedDifficulty, and sectionId
+      navigate("/exam/instruction", {
+        state: {
           selectedSubject,
-          selectedDifficulty
-        }
+          selectedDifficulty,
+          sectionId,
+        },
       });
     } else {
-      // Display an alert if either category or difficulty is not selected
-      alert("Please select both category and difficulty before starting the exam.");
+      // Display an alert if either category, difficulty, or sectionId is not selected
+      alert("Please select category, difficulty, and sectionId before starting the exam.");
     }
   };
 
@@ -70,6 +85,16 @@ const Quiz = () => {
   const filteredCategories = category.filter((data) =>
     data.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+
+  if (category.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen ml-[16.66%] bg-[#282828]">
+        <InfinitySpin color="#4fa94d" loading={loading} css={override} />
+        <div>Loading</div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -137,9 +162,10 @@ const Quiz = () => {
                 </label>
               </div>
             ))}
-            <button 
-            onClick={handleStartExam}
-            className="w-full md:w-1/3 lg:w-1/6 px-2 py-1 md:p-2 text-center text-white bg-red-600 rounded-3xl hover:scale-105 transition duration-200">
+            <button
+              onClick={handleStartExam}
+              className="w-full md:w-1/3 lg:w-1/6 px-2 py-1 md:p-2 text-center text-white bg-red-600 rounded-3xl hover:scale-105 transition duration-200"
+            >
               Start Exam
             </button>
           </div>
@@ -147,7 +173,7 @@ const Quiz = () => {
           <hr className="mt-10 opacity-20 mr-10" />
         </div>
         <div>
-          <h1 className="text-white text-lg mb-4 mt-1">Recommand For you</h1>
+          <h1 className="text-white text-lg mb-4 mt-1">Recommend For You</h1>
           <div className="flex flex-wrap justify-between mx-2 ">
             {trending?.slice(0, 4).map((data) => (
               <div className="" key={data.category}>
@@ -164,4 +190,4 @@ const Quiz = () => {
   );
 };
 
-export default Quiz;
+export default withAuth(Quiz);

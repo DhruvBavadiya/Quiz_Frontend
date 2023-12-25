@@ -7,11 +7,28 @@ import { useNavigate, Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useGenericApi from "../Hooks/useGenericApi";
+import Cookies from 'js-cookie';
 
 const Signup = () => {
   const { response, loading, error, fetchData } = useGenericApi();
   const navigate = useNavigate();
 
+  // Check if the user is already logged in (has a valid token)
+  useEffect(() => {
+    const authToken = Cookies.get("auth-token");
+
+    if (authToken) {
+      toast.warning("You are already logged in.");
+      navigate("/");
+    }
+
+    // Cleanup function
+    return () => {
+      // Any cleanup logic, if needed
+    };
+  }, [navigate]);
+
+  // Handle the API response
   useEffect(() => {
     if (response) {
       console.log(response);

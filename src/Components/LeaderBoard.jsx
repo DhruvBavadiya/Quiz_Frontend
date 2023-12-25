@@ -1,60 +1,63 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { css } from '@emotion/react';
 import { useState, useEffect, useMemo } from 'react';
-
+import { InfinitySpin } from 'react-loader-spinner';
 const LeaderBoard = () => {
-    const dailydata = useMemo(() => [
-      { name: 'John Doe', score: 120 },
-    { name: 'Alice Smith', score: 95 },
-    { name: 'Bob Johnson', score: 80 },
-    { name: 'Eva Williams', score: 110 },
-    { name: 'Charlie', score: 65 },
-    { name: 'Alice Smith', score: 95 },
-    { name: 'Bob Johnson', score: 80 },
-    { name: 'Eva ', score: 110 },
-    { name: 'Charlie Brown', score: 65 },
-      // ... other daily data
-    ], []);
-  
-    const weeklydata = useMemo(() => [
-      { name: 'John Doe', score: 120 },
-      { name: 'Alice Smith', score: 95 },
-      { name: 'Bob Johnson', score: 80 },
-      { name: 'Eva Williams', score: 110 },
-      { name: 'Charlie Brown', score: 65 },
-      { name: 'Alice Smith', score: 95 },
-      { name: 'Bob Johnson', score: 80 },
-      { name: 'Eva Williams', score: 110 },
-      { name: 'Charlie Brown', score: 65 },
+  const [selectedPeriod, setSelectedPeriod] = useState('daily');
+  const [data, setdata] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-      // ... other weekly data
-    ], []);
   
-    const monthlydata = useMemo(() => [
-      { name: 'John Doe', score: 120 },
-      { name: 'Alice Smith', score: 95 },
-      { name: 'Bob Johnson', score: 80 },
-      { name: 'Eva Williams', score: 110 },
-      { name: 'Charlie Brown', score: 65 },
-      { name: 'Alice Smith', score: 95 },
-      { name: 'Bob Johnson', score: 80 },
-      { name: 'Eva Williams', score: 110 },
-      { name: 'Charlie Brown', score: 65 },
-      // ... other monthly data
-    ], []);
-  
-    const [selectedPeriod, setSelectedPeriod] = useState('daily');
-    const [data, setdata] = useState(dailydata);
-  
-    useEffect(() => {
-      // Update data based on the selected period
-      if (selectedPeriod === 'daily') setdata(dailydata);
-      else if (selectedPeriod === 'weekly') setdata(weeklydata);
-      else if (selectedPeriod === 'monthly') setdata(monthlydata);
-    }, [selectedPeriod, dailydata, weeklydata, monthlydata]);
-  
-    const handlePeriodChange = (period) => {
-      setSelectedPeriod(period);
+const override = css`
+display: block;
+margin: 0 auto;
+border-color: red;
+`;
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        let apiUrl = '';
+
+        if (selectedPeriod === 'daily') {
+          apiUrl = 'http://localhost:5000/app/v1/getdaily';
+        } else if (selectedPeriod === 'weekly') {
+          apiUrl = 'http://localhost:5000/app/v1/getweekly';
+        } else if (selectedPeriod === 'monthly') {
+          apiUrl = 'http://localhost:5000/app/v1/getmonthly';
+        }
+
+        const response = await fetch(apiUrl);
+        const result = await response.json();
+        // Assuming the response has a 'data' property with an array of users
+        setdata(result.users || []);
+
+      } catch (error) {
+        console.error('Error fetching leaderboard data:', error);
+      } finally {
+        setLoading(false);
+      }
     };
+
+    fetchData();
+  }, [selectedPeriod]);
+
+  if (data.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-black">
+        <InfinitySpin color="#4fa94d" loading={loading} css={override} />
+        <div>Loading</div>
+      </div>
+    );
+  }
+
+  const handlePeriodChange = (period) => {
+    setSelectedPeriod(period);
+  };
+
   
 
   return (
@@ -106,8 +109,8 @@ const LeaderBoard = () => {
               {data.map((user, index) => (
                 <tr key={index}>
                   <td className="px-4 py-3">{index + 1}</td>
-                  <td className="px-4 py-3">{user.name}</td>
-                  <td className="px-4 py-3 text-lg">{user.score}</td>
+                  <td className="px-4 py-3">{user.username}</td>
+                  <td className="px-4 py-3 text-lg">{user.totalScore}</td>
                 </tr>
               ))}
             </tbody>

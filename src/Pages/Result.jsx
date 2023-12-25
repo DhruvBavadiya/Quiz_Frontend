@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import withAuth from "../Components/withAuth";
 
 const Result = () => {
   const location = useLocation();
@@ -11,10 +12,12 @@ const Result = () => {
       totalQuestions,
       takenTime,
       questions,
+      subject,
+      selectedDifficulty,
+      sectionId
     },
   } = location;
 
-  console.log(correctAnswers)
 
   const calculateScore = () => {
     let selectedCount = 0;
@@ -67,10 +70,9 @@ const Result = () => {
     );
   };
   
-  
-  
-
   const { selectedCount, correctCount, wrongCount } = calculateScore();
+
+
 
   return (
     <div className="flex flex-col justify-center items-center ml-[16.66%] bg-black h-[100%]">
@@ -112,4 +114,4 @@ const Result = () => {
   );
 };
 
-export default Result;
+export default withAuth(Result);

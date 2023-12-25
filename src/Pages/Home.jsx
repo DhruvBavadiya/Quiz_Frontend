@@ -1,38 +1,55 @@
-// Home.js
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../Components/Sidebar";
 import Quizblock from "../Components/Quizblock";
 import Categories from "../Components/Categories";
 import Leaderboard from "../Components/LeaderBoard";
-import { Link, useNavigate } from "react-router-dom";
 import HomeLeaderBoard from "../Components/HomeLeaderBoard";
 import useGenericApi from "../Hooks/useGenericApi";
 import { useData } from '../Context/DataContext';
+import { css } from "@emotion/react";
+import { InfinitySpin } from "react-loader-spinner";
+
+const override = css`
+  display: block;
+  margin: 0 auto;
+  border-color: red;
+`;
 
 const Home = () => {
   const { trending, fetchTrending, category, fetchCategory } = useData();
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("");
+  const [sectionId, setSectionId] = useState("");
   const [showDifficultySelection, setShowDifficultySelection] = useState(false);
-  const navigate = useNavigate()
+  const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
+
   const handleClickCategory = (data) => {
+    setSectionId((prevSelected) =>
+      prevSelected === data?.sectionId ? "" : data?.sectionId
+    );
+
     setSelectedSubject((prevSelected) =>
       prevSelected === data?.category ? "" : data?.category
     );
-    setShowDifficultySelection(prev => !prev); // Toggle the difficulty selection
+
+    setShowDifficultySelection(true);
   };
-  
 
   const handleDifficultyChange = (difficulty) => {
     setSelectedDifficulty(difficulty);
-    if(selectedDifficulty){
-      navigate('exam/instruction',{
-        state:{
-          selectedDifficulty,
-          selectedSubject
-        }
-      })
-    }
+
+    navigate('exam/instruction', {
+      state: {
+        selectedDifficulty: difficulty,
+        selectedSubject,
+        sectionId,
+      },
+    });
   };
 
   useEffect(() => {
@@ -49,28 +66,49 @@ const Home = () => {
     }
   }, [category]);
 
+
+
+  if (category.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen ml-[16.66%] bg-[#282828]">
+        <InfinitySpin color="#4fa94d" loading={loading} css={override} />
+        <div>Loading</div>
+      </div>
+    );
+  }
+
+  // Add a check for empty category data
+ 
+
   return (
-    <div className="flex flex-row scrollbar-none">
+    <div className="flex flex-row" style={{ overflowY: 'auto' }}>
+      <style>
+        {`
+          .scrollbar-none::-webkit-scrollbar {
+            display: none;
+          }
+        `}
+      </style>
       <div className="flex-col flex-1 ml-[16.666666%] bg-[#282828] text-white overflow-y-auto">
-        <div className="text-left ">
+        <div className="text-left">
           <h2 className="text-4xl text-white mt-8 mb-1.5 ml-8 font-bold">
             Featured Topics!
           </h2>
         </div>
-        <div className="flex flex-wrap justify-evenly ml-4 mr-4 ">
+        <div className="flex flex-wrap justify-evenly ml-4 mr-4">
           {trending?.slice(0, 4).map((data) => (
             <div key={data.category} className="hover:scale-105 transition duration-200">
-              <Quizblock Title={data.category} />
+              <Quizblock Title={data.category} sectionId={data.sectionId} />
             </div>
           ))}
         </div>
-        <div className="text-left ">
+        <div className="text-left">
           <h2 className="text-4xl text-white mt-8 mb-1.5 ml-8 font-bold">
             Categories of Quiz!
           </h2>
         </div>
-        <div className="flex flex-wrap justify-evenly ml-4 mr-4 ">
-          {category?.slice(0, 8).map((data, index) => (
+        <div className="flex flex-wrap justify-evenly ml-4 mr-4">
+          {category?.slice(0, 8).map((data) => (
             <div key={data.category} className="w-1/8 p-4" onClick={() => handleClickCategory(data)}>
               <Categories category={data.category} selectedSubject={selectedSubject} />
             </div>
@@ -79,7 +117,7 @@ const Home = () => {
         {showDifficultySelection && (
           <div className="text-left mt-4 ml-8 flex items-center">
             <h2 className="text-4xl text-white mb-1.5 font-bold">Choose Difficulty:</h2>
-            <div className="flex space-x-4 ml-4 ">
+            <div className="flex space-x-4 ml-4">
               <button onClick={() => handleDifficultyChange("Easy")} className="text-white bg-black hover:scale-105 transition duration-100 px-4 py-2 rounded-xl">Easy</button>
               <button onClick={() => handleDifficultyChange("Medium")} className="text-white bg-black hover:scale-105 transition duration-100 px-4 py-2 rounded-xl">Medium</button>
               <button onClick={() => handleDifficultyChange("Hard")} className="text-white bg-black hover:scale-105 transition duration-100 px-4 py-2 rounded-xl">Hard</button>
@@ -87,16 +125,16 @@ const Home = () => {
             </div>
           </div>
         )}
-        
+
         <div className="mt-8">
           <HomeLeaderBoard className="h-5" />
         </div>
         <div className="flex pl-4 mt-4 mb-2 lg:w-fit w-auto mx-auto hover:scale-105">
           <Link
             to="/leaderboard"
-            className="text-white hover:text-[#040D12]  inline-flex items-center md:mb-2 lg:mb-0"
+            className="text-white hover:text-[#040D12] inline-flex items-center md:mb-2 lg:mb-0"
           >
-            Go to Leader board page
+            Go to Leaderboard page
             <svg
               fill="none"
               stroke="currentColor"
@@ -116,4 +154,3 @@ const Home = () => {
 };
 
 export default Home;
-

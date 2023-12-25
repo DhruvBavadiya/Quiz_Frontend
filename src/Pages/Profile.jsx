@@ -11,28 +11,40 @@ import image2 from "../assets/image2.jpg"
 import user from "../assets/user image.jpg"
 import Quizblock from "../Components/Quizblock";
 import useGenericApi from "../Hooks/useGenericApi";
+import withAuth from "../Components/withAuth";
+import { css } from "@emotion/react";
+import { InfinitySpin } from "react-loader-spinner";
 
 const Profile = () => {
 
   const {response ,error ,loading,fetchData} =useGenericApi()
 
-  const trending = [
-    { name: "Physics", description: "Dive into Knowledge of physics." },
-    { name: "Gk", description: "Get test yourself with general Knowledge." },
-    { name: "Maths", description: "Let's test maths with your logic." },
-    { name: "Maths", description: "Let's test maths with your logic." },
-  ];
-
-  const token = localStorage.getItem('token')
-  console.log(token)
+  const userId = JSON.parse(localStorage.getItem('user'))._id
+  // console.log(userId)
   useEffect(() => {
-    fetchData('user', 'GET',{'token':token});
+    fetchData('user', 'POST',{'userId':userId});
     if (response) {
       console.log(response);
     } else {
       console.log(error);
     }
   }, [fetchData]);
+
+  
+const override = css`
+display: block;
+margin: 0 auto;
+border-color: red;
+`;
+
+if (loading) {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen ml-[16.66%] bg-[#282828]">
+      <InfinitySpin color="#4fa94d" loading={loading} css={override} />
+      <div>Loading</div>
+    </div>
+  );
+}
   
 
   return (
@@ -46,17 +58,17 @@ const Profile = () => {
           />
           <div className="flex flex-col ml-6 items-center ">
             <h1 className="text-3xl text-white text-center font-bold mb-1">
-              User name
+              {response?.username}
             </h1>
             <div className="rounded-xl bg-black p-4 flex flex-col items-center">
               <div className="rounded-lg bg-[#282828] p-4 flex flex-col">
                 <div className="flex items-center">
                   <EmailIcon className="text-white" />
-                  <h1 className="text-white text-lg ml-1">user1@gmail.com</h1>
+                  <h1 className="text-white text-lg ml-1">{response?.email}</h1>
                 </div>
                 <div className="flex items-center mt-2">
                   <CallIcon className="text-white text-sm" />
-                  <h1 className="text-white text-lg ml-1">8238978978</h1>
+                  <h1 className="text-white text-lg ml-1">{response?.mobile}</h1>
                 </div>
               </div>
               <div className="flex items-center mt-2">
@@ -79,7 +91,7 @@ const Profile = () => {
                 <div>
                   <h1 className="text-sm mt-1">Quizzes completed</h1>
                 </div>
-                <span className="text-lg mt-2">9</span>
+                <span className="text-lg mt-2">{response?.totalExam}</span>
               </div>
             </div>
             <div className="rounded-2xl mr-4 text-white bg-black">
@@ -90,7 +102,7 @@ const Profile = () => {
                 <div>
                   <h1 className="text-sm mt-1">Leader Rank</h1>
                 </div>
-                <span className="text-lg mt-2">9</span>
+                <span className="text-lg mt-2">{response?.DailyRank}</span>
               </div>
             </div>
             <div className="rounded-2xl mr-4 text-white bg-black">
@@ -152,4 +164,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default withAuth(Profile);

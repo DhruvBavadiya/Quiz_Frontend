@@ -2,20 +2,32 @@ import React, { useEffect, useState } from 'react';
 
 const HomeLeaderBoard = () => {
 
-    const dailydata = [
-        { name: 'John Doe', score: 120 },
-        { name: 'Alice Smith', score: 95 },
-        { name: 'Bob Johnson', score: 80 },
-        { name: 'Eva Williams', score: 110 },
-        { name: 'Charlie Brown', score: 65 },
-        { name: 'Alice Smith', score: 95 },
-        { name: 'Bob Johnson', score: 80 },
-        { name: 'Eva Williams', score: 110 },
-        { name: 'Charlie Brown', score: 65 },
-      ];
-      const [data,setdata] = useState(dailydata)
+  const [data, setdata] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-      useEffect(()=>{setdata(data)},[data])
+      useEffect(() => {
+        const fetchData = async () => {
+          try {
+            setLoading(true);
+    
+            let apiUrl = '';
+    
+              apiUrl = 'http://localhost:5000/app/v1/getdaily';
+    
+            const response = await fetch(apiUrl);
+            const result = await response.json();
+            // Assuming the response has a 'data' property with an array of users
+            setdata(result.users || []);
+    
+          } catch (error) {
+            console.error('Error fetching leaderboard data:', error);
+          } finally {
+            setLoading(false);
+          }
+        };
+    
+        fetchData();
+      }, []);
 
   return (
     <section className="text-white body-font bg-[#3f3f3f] h-[100%] border-white  mx-24 rounded-lg">
@@ -37,8 +49,8 @@ const HomeLeaderBoard = () => {
               {data.slice(0,5).map((user, index) => (
                 <tr key={index}>
                   <td className="px-4 py-3">{index + 1}</td>
-                  <td className="px-4 py-3">{user.name}</td>
-                  <td className="px-4 py-3 text-lg">{user.score}</td>
+                  <td className="px-4 py-3">{user.username}</td>
+                  <td className="px-4 py-3 text-lg">{user.totalScore}</td>
                 </tr>
               ))}
             </tbody>

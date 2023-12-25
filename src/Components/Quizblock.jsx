@@ -14,7 +14,8 @@ const Quizblock = (props) => {
     navigate(`/exam/instruction`,{
       state:{
         selectedDifficulty,
-        selectedSubject:props.Title
+        selectedSubject:props.Title,
+        sectionId:props.sectionId
       }
     });
   };

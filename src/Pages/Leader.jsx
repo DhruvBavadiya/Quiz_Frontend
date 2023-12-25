@@ -2,6 +2,7 @@
 import React from 'react'
 import LeaderBoard from '../Components/LeaderBoard';
 import { Leaderboard } from '@mui/icons-material';
+import withAuth from '../Components/withAuth';
 
 const Leader = () => {
   const data = [
@@ -25,4 +26,4 @@ const Leader = () => {
   )
 }
 
-export default Leader
+export default withAuth(Leader)
