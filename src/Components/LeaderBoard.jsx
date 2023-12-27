@@ -106,13 +106,20 @@ border-color: red;
               </tr>
             </thead>
             <tbody>
-              {data.map((user, index) => (
-                <tr key={index}>
-                  <td className="px-4 py-3">{index + 1}</td>
-                  <td className="px-4 py-3">{user.username}</td>
-                  <td className="px-4 py-3 text-lg">{user.totalScore}</td>
-                </tr>
-              ))}
+            {data.map((user, index) => (
+              <tr key={index}>
+                <td className="px-4 py-3">{index + 1}</td>
+                <td className="px-4 py-3">{user.username}</td>
+                {selectedPeriod === "daily" ? (
+                  <td className="px-4 py-3 text-lg">{user.DailyScore}</td>
+                ) : selectedPeriod === "weekly" ? (
+                  <td className="px-4 py-3 text-lg">{user.WeeklyScore}</td>
+                ) : (
+                  <td className="px-4 py-3 text-lg">{user.MonthlyScore}</td>
+                )}
+              </tr>
+            ))}
+            
             </tbody>
           </table>
         </div>
