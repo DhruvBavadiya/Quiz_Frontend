@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 
 const HomeLeaderBoard = () => {
@@ -12,7 +13,7 @@ const HomeLeaderBoard = () => {
     
             let apiUrl = '';
     
-              apiUrl = 'http://localhost:5000/app/v1/getdaily';
+              apiUrl = 'https://quiz-app-pj53.onrender.com/app/v1/getdaily';
     
             const response = await fetch(apiUrl);
             const result = await response.json();

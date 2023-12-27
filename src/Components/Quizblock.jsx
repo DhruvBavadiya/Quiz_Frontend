@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/img-redundant-alt */
+/* eslint-disable no-unused-vars */
 /* eslint-disable jsx-a11y/alt-text */
 import React, { useState } from "react";
 import Maths from "../assets/maths.jpg";
@@ -29,8 +31,9 @@ const Quizblock = (props) => {
       <div className="flex flex-col static">
         <div>
           <img
-            src={Maths}
+            src={props.img}
             className="bg-cover h-28 w-[16.5rem] rounded-2xl bg-center"
+            alt="subject image"
           />
         </div>
         <div className="relative bg-black text-white font-semibold px-4 w-fit py-1 rounded-full bottom-4 left-3">

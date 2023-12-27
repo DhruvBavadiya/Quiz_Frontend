@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // Quiz.js
 import React, { useEffect, useState } from "react";
 import Categories from "../Components/Categories";
@@ -178,6 +179,7 @@ const Quiz = () => {
             {trending?.slice(0, 4).map((data) => (
               <div className="" key={data.category}>
                 <Quizblock
+                img={data.image}
                   Title={data.category}
                   Description={data.description}
                 />

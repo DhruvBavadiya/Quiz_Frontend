@@ -29,15 +29,22 @@ const Home = () => {
   const navigate = useNavigate();
 
   const handleClickCategory = (data) => {
+    // If the same category is clicked again, deselect it
+    const newSelectedSubject = selectedSubject === data?.category ? "" : data?.category;
+    setSelectedSubject(newSelectedSubject);
+
+    // Reset related states when deselecting a category
+    if (!newSelectedSubject) {
+      setSelectedDifficulty("");
+      setSectionId("");
+      setShowDifficultySelection(false);
+    } else {
+      setShowDifficultySelection(true);
+    }
+
     setSectionId((prevSelected) =>
       prevSelected === data?.sectionId ? "" : data?.sectionId
     );
-
-    setSelectedSubject((prevSelected) =>
-      prevSelected === data?.category ? "" : data?.category
-    );
-
-    setShowDifficultySelection(true);
   };
 
   const handleDifficultyChange = (difficulty) => {
@@ -66,8 +73,6 @@ const Home = () => {
     }
   }, [category]);
 
-
-
   if (category.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-screen ml-[16.66%] bg-[#282828]">
@@ -76,9 +81,6 @@ const Home = () => {
       </div>
     );
   }
-
-  // Add a check for empty category data
- 
 
   return (
     <div className="flex flex-row" style={{ overflowY: 'auto' }}>
@@ -98,7 +100,7 @@ const Home = () => {
         <div className="flex flex-wrap justify-evenly ml-4 mr-4">
           {trending?.slice(0, 4).map((data) => (
             <div key={data.category} className="hover:scale-105 transition duration-200">
-              <Quizblock Title={data.category} sectionId={data.sectionId} />
+              <Quizblock Title={data.category} img={data.image} sectionId={data.sectionId} />
             </div>
           ))}
         </div>
@@ -109,7 +111,7 @@ const Home = () => {
         </div>
         <div className="flex flex-wrap justify-evenly ml-4 mr-4">
           {category?.slice(0, 8).map((data) => (
-            <div key={data.category} className="w-1/8 p-4" onClick={() => handleClickCategory(data)}>
+            <div key={data.category} className="w-1/4 p-4" onClick={() => handleClickCategory(data)}>
               <Categories category={data.category} selectedSubject={selectedSubject} />
             </div>
           ))}

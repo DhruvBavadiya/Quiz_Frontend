@@ -15,10 +15,11 @@ import NotFoundPage from './Pages/NotFoundPage';
 import ExamPage from './Pages/Exampage';
 import Result from './Pages/Result';
 import { DataProvider } from './Context/DataContext';
+import { AuthProvider } from './Context/AuthContext'; // Add this line
 
 function App() {
   return (
-    <>
+    <AuthProvider> {/* Wrap App with AuthProvider */}
       <DataProvider>
         <div className="App overflow-y-auto scroll-m-0">
           <Sidebar />
@@ -51,7 +52,7 @@ function App() {
           </Routes>
         </div>
       </DataProvider>
-    </>
+    </AuthProvider>
   );
 }
 

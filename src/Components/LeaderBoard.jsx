@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { css } from '@emotion/react';
 import { useState, useEffect, useMemo } from 'react';
@@ -14,7 +15,6 @@ margin: 0 auto;
 border-color: red;
 `;
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -23,11 +23,11 @@ border-color: red;
         let apiUrl = '';
 
         if (selectedPeriod === 'daily') {
-          apiUrl = 'http://localhost:5000/app/v1/getdaily';
+          apiUrl = 'https://quiz-app-pj53.onrender.com/app/v1/getdaily';
         } else if (selectedPeriod === 'weekly') {
-          apiUrl = 'http://localhost:5000/app/v1/getweekly';
+          apiUrl = 'https://quiz-app-pj53.onrender.com/app/v1/getweekly';
         } else if (selectedPeriod === 'monthly') {
-          apiUrl = 'http://localhost:5000/app/v1/getmonthly';
+          apiUrl = 'https://quiz-app-pj53.onrender.com/app/v1/getmonthly';
         }
 
         const response = await fetch(apiUrl);

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
 // Import statements
 import { css } from "@emotion/react";
@@ -40,12 +42,23 @@ const ExamPage = () => {
   }
 
   useEffect(() => {
+    // Update the remaining time every second
+    const timer = setInterval(() => {
+      setRemainingTime((prevTime) => prevTime - 1);
+    }, 1000);
+
+    // Clear the timer when the component is unmounted or when the exam is submitted
+    return () => clearInterval(timer);
+  }, []);
+
+
+  useEffect(() => {
     const fetchQuestions = async () => {
       try {
         setLoading(true);
 
         let apiUrl = `https://quiz-app-pj53.onrender.com/app/v1/getbycategory?category=${capitalizeFirstLetter(
-          subject
+          selectedSubject
         )}`;
 
         if (difficulty && difficulty.toLowerCase() !== 'random') {
@@ -146,7 +159,7 @@ const ExamPage = () => {
     const submitResult = async () => {
       try {
         // Make the API call to submit the result
-        const response = await fetch("http://localhost:5000/app/v1/submit", {
+        const response = await fetch("https://quiz-app-pj53.onrender.com/app/v1/submit", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -202,7 +215,15 @@ const ExamPage = () => {
   return (
     <div className="flex justify-center bg-black h-[100%]">
       <div className="container ml-[16.66%] my-8 p-8 bg-[#282828] w-[70%] rounded-md">
+      <div className="flex justify-center mb-4">
+      <h2 className="text-2xl font-bold text-white">
+        {capitalizeFirstLetter(selectedSubject)} - {capitalizeFirstLetter(selectedDifficulty)}
+      </h2>
+      
+      </div>
+      <hr className="mt-3 border-blue-700 mb-3 w-[100%]" />
         <div className="fixed top-0 right-0 bg-white p-4 rounded-md shadow-md">
+        
           <p className="text-lg font-semibold mb-2">
             Remaining Time: {formatTime(remainingTime)}
           </p>
@@ -215,7 +236,7 @@ const ExamPage = () => {
                 className="flex flex-col items-start ml-2 mb-4"
               >
                 <div className="text-lg font-bold mb-2">
-                  {`${data.questionId}. ${data.questionText}`}
+                {`${index + 1}. ${data.questionText}`}
                 </div>
                 <div className="ml-2 flex flex-col items-start">
                   {Object.entries(data.options).map(
@@ -251,7 +272,7 @@ const ExamPage = () => {
           )}
         </div>
         <button
-          className="py-2 px-4 bg-blue-500 text-white rounded-md"
+          className="py-2 px-4 mt-5  bg-blue-900 text-white rounded-md"
           onClick={handleSubmit}
         >
           Submit

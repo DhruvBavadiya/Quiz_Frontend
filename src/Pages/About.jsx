@@ -4,6 +4,13 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import EmailIcon from '@mui/icons-material/Email';
 
+const socialMediaLinks = [
+  { href: 'https://twitter.com/', icon: <TwitterIcon color="primary" fontSize="large" /> },
+  { href: 'https://www.linkedin.com/', icon: <LinkedInIcon color="primary" fontSize="large" /> },
+  { href: 'https://www.instagram.com/', icon: <InstagramIcon color="primary" fontSize="large" /> },
+  { href: 'mailto:info@example.com', icon: <EmailIcon color="primary" fontSize="large" /> },
+];
+
 const About = () => {
   return (
     <div className="bg-[#282828] ml-[16.66%] flex items-center h-[100vh] justify-center">
@@ -15,21 +22,11 @@ const About = () => {
           interactive, and accessible to everyone.
         </p>
         <div className="mt-8 flex gap-4 justify-center">
-          <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer">
-            <TwitterIcon color="primary" fontSize="large" />
-          </a>
-          {/* LinkedIn */}
-          <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">
-            <LinkedInIcon color="primary" fontSize="large" />
-          </a>
-          {/* Instagram */}
-          <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
-            <InstagramIcon color="primary" fontSize="large" />
-          </a>
-          {/* Email */}
-          <a href="mailto:info@example.com">
-            <EmailIcon color="primary" fontSize="large" />
-          </a>
+          {socialMediaLinks.map((link, index) => (
+            <a key={index} href={link.href} target="_blank" rel="noopener noreferrer">
+              {link.icon}
+            </a>
+          ))}
         </div>
       </div>
     </div>

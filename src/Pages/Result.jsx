@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import withAuth from "../Components/withAuth";
 
 const Result = () => {
   const location = useLocation();
+  const navigate=useNavigate()  
   const {
     state: {
       selectedAnswers,
@@ -17,6 +18,23 @@ const Result = () => {
       sectionId
     },
   } = location;
+
+
+  useEffect(() => {
+    const handlePopstate = (event) => {
+      // Redirect to the home page when the user tries to go back
+      navigate('/');
+    };
+
+    // Attach the event listener when the component mounts
+    window.addEventListener('popstate', handlePopstate);
+
+    // Detach the event listener when the component unmounts
+    return () => {
+      window.removeEventListener('popstate', handlePopstate);
+    };
+  }, [navigate]);
+
 
 
   const calculateScore = () => {
@@ -52,7 +70,7 @@ const Result = () => {
     return (
       <div key={question._id} className={`flex flex-col ml-6 items-start mb-4 mt-8 ${isSelected ? (isCorrect ? "text-green-500" : isWrong ? "text-red-500" : "") : "text-gray-500"}`}>
         <div className="text-lg font-bold mb-2">
-          {`${question.questionId}. ${question.questionText}`}
+          {`${index + 1}. ${question.questionText}`}
         </div>
         <div className="ml-2 flex flex-col items-start">
           {Object.entries(question.options).map(([optionKey, optionValue], i) => (

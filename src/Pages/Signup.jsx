@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 // Signup.jsx
 
 import React, { useEffect } from "react";
@@ -8,9 +10,12 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useGenericApi from "../Hooks/useGenericApi";
 import Cookies from 'js-cookie';
+import { useAuth } from "../Context/AuthContext";
 
 const Signup = () => {
   const { response, loading, error, fetchData } = useGenericApi();
+  const { isLoggedIn, login, logout } = useAuth();
+
   const navigate = useNavigate();
 
   // Check if the user is already logged in (has a valid token)
@@ -34,13 +39,20 @@ const Signup = () => {
       console.log(response);
       const userString = JSON.stringify(response?.user);
       localStorage.setItem("user", userString);
-      localStorage.setItem("token", response.token);
+      login()
+      Cookies.set("auth-token", response.token, { expires: 7 });
       toast.success("Signup successful!");
       navigate("/");
     }
     if (error) {
       console.error("Error in Signup:", error);
-      toast.error("Signup failed. Please try again.");
+
+      // Check if there is a response from the API with an error message
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Signup failed. Please try again.");
+      }
     }
   }, [response, error, navigate]);
 

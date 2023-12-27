@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-unused-vars */
 // Import necessary libraries and components
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
@@ -7,9 +9,13 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import useGenericApi from "../Hooks/useGenericApi";
 import Cookies from 'js-cookie';
+import TextField from '@mui/material/TextField';
+import { useAuth } from "../Context/AuthContext";
 
 const Login = () => {
   const { response, loading, error, fetchData } = useGenericApi();
+  const { isLoggedIn, login, logout } = useAuth();
+
   const navigate = useNavigate();
 
   // Check if the user is already logged in (has a valid token)
@@ -34,17 +40,34 @@ const Login = () => {
   
       // Store token in localStorage
       const userString = JSON.stringify(response?.user);
+      login()
       localStorage.setItem("user", userString);
       Cookies.set("auth-token", response.token, { expires: 7 });
       toast.success("Login successful!");
       navigate("/");
+    }
+    if (error) {
+      console.error("Error in Login:", error);
+
+      // Check if there is a response from the API with an error code
+      if (error.response && error.response.data && error.response.data.errorCode) {
+        toast.error(error.response.data.message); // Display the error message from the API
+      } else {
+        toast.error("Login failed. Please try again.");
+      }
     }
   }, [response, error, navigate]);
 
   // Define validation schema
   const validationSchema = Yup.object().shape({
     email: Yup.string().email("Invalid email").required("Email is required"),
-    password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+    password: Yup.string()
+      .min(8, "Password must be at least 8 characters")
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+      )
+      .required("Password is required"),
   });
 
   // Formik form handling
@@ -56,6 +79,7 @@ const Login = () => {
     validationSchema,
     onSubmit: (values) => {
       fetchData("login", "POST", values);
+      
     },
   });
 
@@ -71,33 +95,34 @@ const Login = () => {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email:</label>
-            <input
-              type="text"
+            <TextField
+              fullWidth
+              id="email"
               name="email"
+              label="Email"
+              variant="outlined"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.email}
-              className="mt-1 p-2 w-full border rounded-md"
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
             />
-            {formik.touched.email && formik.errors.email ? (
-              <div className="text-red-500 text-sm">{formik.errors.email}</div>
-            ) : null}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password:</label>
-            <input
-              type="password"
+            <TextField
+              fullWidth
+              id="password"
               name="password"
+              label="Password"
+              type="password"
+              variant="outlined"
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.password}
-              className="mt-1 p-2 w-full border rounded-md"
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
             />
-            {formik.touched.password && formik.errors.password ? (
-              <div className="text-red-500 text-sm">{formik.errors.password}</div>
-            ) : null}
           </div>
         </div>
 
